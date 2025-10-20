@@ -1,0 +1,186 @@
+/* ====== Variables & Reset ====== */
+:root{
+  --bg:#f6f7fb;
+  --panel:#ffffff;
+  --primary:#1f3b68;
+  --primary-600:#142949;
+  --accent:#e6f0ff;
+  --text:#1b1b1b;
+  --muted:#6b7280;
+  --success:#16a34a;
+  --error:#dc2626;
+  --ring:#c7d2fe;
+  --shadow: 0 10px 25px rgba(0,0,0,.08);
+  --radius: 18px;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol";
+  color:var(--text);
+  background:linear-gradient(120deg,#eef2ff 0%, #f8fafc 100%);
+}
+
+/* ====== Layout ====== */
+.login-wrapper{
+  max-width: 980px;
+  margin: clamp(20px,5vh,60px) auto;
+  background: var(--panel);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  min-height: 560px;
+}
+
+@media (max-width: 860px){
+  .login-wrapper{
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+}
+
+/* ====== Left panel ====== */
+.login-hero{
+  background: linear-gradient(160deg, #eaf3ff 0%, #dff3ef 100%);
+  padding: 42px 40px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+.login-hero .avatar{
+  width: 160px;
+  height:160px;
+  border-radius:50%;
+  background: radial-gradient(circle at 35% 35%, #cfe3ff 0 40%, #b6d5ff 41% 100%);
+  display:grid;
+  place-items:center;
+  box-shadow: inset 0 8px 16px rgba(255,255,255,.7), inset 0 -12px 22px rgba(0,0,0,.06);
+}
+.login-hero h1{
+  margin: 22px 0 6px;
+  font-size: clamp(22px, 2.4vw, 28px);
+  letter-spacing:.6px;
+}
+.login-hero p{
+  margin:0;
+  color:var(--muted);
+  text-align:center;
+}
+
+/* ====== Right form ====== */
+.login-form{
+  padding: 38px 40px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.form-title{
+  font-size: clamp(22px,2.4vw,28px);
+  margin: 0 0 22px;
+}
+
+.input-group{
+  margin-bottom: 16px;
+}
+
+.label{
+  display:block;
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+
+.input{
+  width:100%;
+  border:1px solid #e5e7eb;
+  background:#fafafa;
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 16px;
+  outline: none;
+  transition:.15s border, .15s box-shadow, .15s background;
+}
+.input:focus{
+  border-color: var(--primary);
+  background:#fff;
+  box-shadow: 0 0 0 4px var(--ring);
+}
+
+.input-icon{
+  position:relative;
+}
+.input-icon .icon{
+  position:absolute;
+  left:12px; top:50%; transform:translateY(-50%);
+  width:22px; height:22px; opacity:.7;
+}
+.input-icon .input{
+  padding-left: 44px;
+}
+
+.toggle-pass{
+  position:absolute;
+  right:10px; top:50%; transform:translateY(-50%);
+  border:none; background:transparent; cursor:pointer;
+  font-size:14px; color:var(--muted);
+}
+
+.actions{
+  display:flex; gap:12px; align-items:center; margin-top: 6px;
+}
+
+.btn{
+  appearance:none; border:none; cursor:pointer;
+  padding: 12px 16px; border-radius: 14px;
+  font-weight: 600; font-size: 15px;
+  transition: transform .04s ease, box-shadow .15s ease, background .2s;
+}
+.btn-primary{
+  background: var(--primary); color:#fff; box-shadow: 0 8px 18px rgba(31,59,104,.22);
+}
+.btn-primary:hover{ background: var(--primary-600)}
+.btn-primary:active{ transform: translateY(1px) }
+
+.link{
+  color: var(--primary-600); text-decoration:none; font-size:14px;
+}
+.link:hover{ text-decoration:underline }
+
+/* Alerts */
+.alert{
+  padding: 12px 14px; border-radius: 12px; margin-bottom: 14px;
+  font-size: 14px; line-height:1.35;
+}
+.alert.exito{ background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0 }
+.alert.error{ background:#fef2f2; color:#991b1b; border:1px solid #fecaca }
+
+/* Small helpers */
+.note{ font-size: 13px; color:var(--muted) }
+
+/* ===== Registro: medidor de contraseña ===== */
+.strength {
+  height: 8px;
+  background: #eef2ff;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 8px;
+  border: 1px solid #e5e7eb;
+}
+.strength > span {
+  display:block; height:100%; width:0%;
+  background: linear-gradient(90deg,#fca5a5,#fdba74,#fcd34d,#a7f3d0,#86efac);
+  transition: width .25s ease;
+}
+.helper {
+  font-size: 12px; color: var(--muted); margin-top: 6px;
+}
+.form-footer {
+  display:flex; gap:12px; align-items:center; margin-top: 10px;
+  flex-wrap: wrap;
+}
