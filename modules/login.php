@@ -15,16 +15,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $loginResult = iniciarSesion($conn, $correo, $password);
 
         if ($loginResult === true) {
-            $usuario = obtenerUsuario($conn, $correo);
+    // ya tienes la sesión abierta en iniciarSesion() → $_SESSION['idUsuario']
+    $usuario = obtenerUsuario($conn, $correo);
 
-            if ($usuario['tipo'] === 'Cliente') {
-                header("Location: ../dashboard/cliente/index.php");
-            } else {
-                // Por ahora todos los Empleado van al dashboard de empleado
-                header("Location: ../dashboard/empleado/index.php");
-            }
-            exit();
-        } else {
+    // 👉 si es Admin (Empleado con Puesto 'Administrador' o tipo='Admin')
+    if (esAdmin($conn, $_SESSION['idUsuario'])) {
+        header("Location: ../dashboard/admin/index.php");
+        exit;
+    }
+
+    // Empleado
+    if ($usuario['tipo'] === 'Empleado') {
+        header("Location: ../dashboard/empleado/index.php");
+        exit;
+    }
+
+    // Cliente
+    header("Location: ../dashboard/cliente/index.php");
+    exit;
+} else {
             $mensaje = $loginResult;
             $tipoMensaje = 'error';
         }

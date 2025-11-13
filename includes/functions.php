@@ -165,14 +165,140 @@ function registrarEvento($conn, $idUsuario, $evento, $resultado, $descripcion) {
     $stmt->execute();
 }
 
-
-
-// Obtener datos de usuario
+// ================================
+// 🔎 Obtener usuario por correo (ÚNICA versión)
+// ================================
 function obtenerUsuario($conn, $correo) {
-    $sql = "SELECT * FROM usuario WHERE correo = ?";
+    $sql = "SELECT idUsuario, correo, contrasena, tipo, idRelacionado, estado, intentosFallidos
+            FROM usuario
+            WHERE correo = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $correo);
     $stmt->execute();
     return $stmt->get_result()->fetch_assoc();
 }
+
+// ================================
+// 🔐 Es administrador (según tu BD)
+// Regla:
+//  - usuario.tipo = 'Empleado'
+//  - hay un registro en EMPLEADO con el MISMO correo y Puesto='Administrador'
+// ================================
+function esAdmin($conn, $idUsuario) {
+    $sql = "SELECT u.tipo, u.correo, e.Puesto
+            FROM usuario u
+            LEFT JOIN empleado e ON e.Correo = u.correo
+            WHERE u.idUsuario = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $idUsuario);
+    $stmt->execute();
+    $res = $stmt->get_result()->fetch_assoc();
+
+    if (!$res) return false;
+    if ($res['tipo'] !== 'Empleado') return false;
+
+    $puesto = $res['Puesto'] ?? '';
+    return (strcasecmp($puesto, 'Administrador') === 0);
+}
+
+/* ============================
+   🔧 UTILIDADES PRODUCTOS (CRUD)
+   ============================ */
+
+// Categorías para selects
+function obtenerCategorias($conn) {
+    $sql = "SELECT idCategoria, Nombre FROM categoria ORDER BY Nombre";
+    $res = $conn->query($sql);
+    return $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
+}
+
+// ¿ya existe un producto con ese nombre? (para evitar duplicados)
+function productoExiste($conn, $nombre, $excluirId = null) {
+    if ($excluirId) {
+        $sql = "SELECT 1 FROM producto WHERE Nombre = ? AND idProducto <> ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("si", $nombre, $excluirId);
+    } else {
+        $sql = "SELECT 1 FROM producto WHERE Nombre = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $nombre);
+    }
+    $stmt->execute();
+    $res = $stmt->get_result();
+    return $res->num_rows > 0;
+}
+
+// Crear producto
+function crearProducto($conn, $nombre, $descripcion, $precio, $stock, $idCategoria) {
+    $sql = "INSERT INTO producto (Nombre, Descripcion, Precio, Stock, idCategoria)
+            VALUES (?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssdii", $nombre, $descripcion, $precio, $stock, $idCategoria);
+    $ok = $stmt->execute();
+
+    if ($ok && isset($_SESSION['idUsuario'])) {
+        registrarEvento($conn, $_SESSION['idUsuario'], 'Producto - Crear', 'Exitoso', "Se creó '$nombre'.");
+    }
+    return $ok;
+}
+
+// Listado con nombre de categoría
+function obtenerProductos($conn) {
+    $sql = "SELECT p.idProducto, p.Nombre, p.Descripcion, p.Precio, p.Stock,
+                   c.Nombre AS Categoria, p.idCategoria
+            FROM producto p
+            INNER JOIN categoria c ON c.idCategoria = p.idCategoria
+            ORDER BY p.idProducto DESC";
+    $res = $conn->query($sql);
+    return $res ? $res->fetch_all(MYSQLI_ASSOC) : [];
+}
+
+// Un producto
+function obtenerProductoPorId($conn, $idProducto) {
+    $sql = "SELECT idProducto, Nombre, Descripcion, Precio, Stock, idCategoria
+            FROM producto WHERE idProducto = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $idProducto);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc();
+}
+
+// Actualizar producto
+function actualizarProducto($conn, $id, $nombre, $descripcion, $precio, $stock, $idCategoria) {
+    $sql = "UPDATE producto
+               SET Nombre=?, Descripcion=?, Precio=?, Stock=?, idCategoria=?
+             WHERE idProducto=?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssdiii", $nombre, $descripcion, $precio, $stock, $idCategoria, $id);
+    $ok = $stmt->execute();
+
+    if ($ok && isset($_SESSION['idUsuario'])) {
+        registrarEvento($conn, $_SESSION['idUsuario'], 'Producto - Editar', 'Exitoso', "Se actualizó '$nombre'.");
+    }
+    return $ok;
+}
+
+// ¿Se puede eliminar? (no si está en alguna venta)
+function puedeEliminarProducto($conn, $idProducto) {
+    $sql = "SELECT 1 FROM detalleventa WHERE idProducto = ? LIMIT 1";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $idProducto);
+    $stmt->execute();
+    return $stmt->get_result()->num_rows === 0;
+}
+
+// Eliminar producto
+function eliminarProducto($conn, $idProducto) {
+    if (!puedeEliminarProducto($conn, $idProducto)) return false;
+    $sql = "DELETE FROM producto WHERE idProducto = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $idProducto);
+    $ok = $stmt->execute();
+
+    if ($ok && isset($_SESSION['idUsuario'])) {
+        registrarEvento($conn, $_SESSION['idUsuario'], 'Producto - Eliminar', 'Exitoso', "id=$idProducto");
+    }
+    return $ok;
+}
+
 ?>
