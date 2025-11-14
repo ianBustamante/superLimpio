@@ -147,38 +147,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php endif; ?>
 
 <script src="../assets/js/validation.js"></script>
-<script>
-// Pequeñas ayudas de UX para mostrar/ocultar contraseñas y validar rápido
-document.addEventListener('DOMContentLoaded', () => {
-  const newPass = document.querySelector('#nueva_contrasena');
-  const conf    = document.querySelector('#confirmar_contrasena');
-  const t1 = document.querySelector('#toggleNew');
-  const t2 = document.querySelector('#toggleNew2');
-
-  const toggle = (btn, input) => {
-    btn?.addEventListener('click', e=>{
-      e.preventDefault();
-      const type = input.type === 'password' ? 'text' : 'password';
-      input.type = type;
-      btn.textContent = type === 'password' ? 'Mostrar' : 'Ocultar';
-    });
-  };
-  toggle(t1, newPass);
-  toggle(t2, conf);
-
-  document.querySelector('#applyCodeForm')?.addEventListener('submit', (e)=>{
-    const errs = [];
-    if (!newPass.value.trim() || !conf.value.trim()) errs.push('Completa ambos campos de contraseña.');
-    if (newPass.value !== conf.value) errs.push('Las contraseñas no coinciden.');
-    if (!( /[A-Z]/.test(newPass.value) && /\d/.test(newPass.value) && newPass.value.length >= 8 )) {
-      errs.push('La contraseña debe tener 8+ caracteres, 1 mayúscula y 1 número.');
-    }
-    if (errs.length) {
-      e.preventDefault();
-      alert(errs.join('\\n'));
-    }
-  });
-});
-</script>
 </body>
 </html>
