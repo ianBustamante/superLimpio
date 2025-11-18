@@ -47,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $tipoMensaje = 'exito';
                 $autoRedirect = true;
             } else {
-                // Devuelve mensaje: “Código inválido o ya utilizado.” o “El código ha expirado.”
                 $mensaje = $resultado;
                 $tipoMensaje = 'error';
             }
@@ -59,83 +58,91 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Recuperación de Contraseña</title>
+  <title>Recuperación de Contraseña | Super Limpio</title>
+
+  <!-- Estilos globales -->
   <link rel="stylesheet" href="../assets/css/style.css">
+  <!-- Estilos específicos para recuperación -->
+  <link rel="stylesheet" href="../assets/css/recovery.css">
 </head>
 <body>
 
-<div class="login-wrapper">
-  <!-- Panel visual izquierdo -->
-  <section class="login-hero">
-    <div class="avatar" aria-hidden="true">
-      <svg viewBox="0 0 64 64" width="92" height="92">
-        <circle cx="32" cy="24" r="12" fill="#fff"/>
-        <path d="M8,60a24,18 0 1,1 48,0" fill="#fff"/>
-      </svg>
+<div class="auth-page">
+  <header class="login-header">
+    <div class="header-icon">
+      <img src="../assets/img/blue-key-recovery.png" alt="Icono recuperación">
     </div>
-    <h1>RECUPERAR ACCESO</h1>
+    <h1>Recuperar acceso</h1>
     <p>Sigue los pasos para restablecer tu contraseña.</p>
-  </section>
+  </header>
 
-  <!-- Panel derecho -->
-  <section class="login-form">
-    <h2 class="form-title">Restablecer contraseña</h2>
+  <?php if($mensaje): ?>
+    <div class="alert <?= $tipoMensaje; ?>"><?= $mensaje; ?></div>
+  <?php endif; ?>
 
-    <?php if($mensaje): ?>
-      <div class="alert <?= $tipoMensaje; ?>"><?= $mensaje; ?></div>
-    <?php endif; ?>
-
-    <!-- Paso 1: Solicitar código -->
-    <form id="reqCodeForm" method="POST" action="" style="margin-bottom:18px">
-      <div class="input-group input-icon">
+  <!-- Paso 1: Solicitar código -->
+  <form id="reqCodeForm" method="POST" action="" style="margin-bottom:18px">
+    <div class="input-group">
+      <label class="label" for="correo_recuperacion">Correo registrado</label>
+      <div class="input-wrapper">
         <span class="icon" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2m0 4l-8 5L4 8V6l8 5l8-5Z"/></svg>
         </span>
-        <label class="label" for="correo_recuperacion">Correo registrado</label>
-        <input class="input" type="email" name="correo_recuperacion" id="correo_recuperacion" placeholder="tucorreo@dominio.com" required>
+        <input class="input" type="email" name="correo_recuperacion" id="correo_recuperacion"
+               placeholder="tucorreo@dominio.com" required>
       </div>
-      <div class="form-footer">
-        <button class="btn btn-primary" type="submit">Generar código</button>
-        <a class="link" href="login.php">Volver a iniciar sesión</a>
-      </div>
-    </form>
+    </div>
 
-    <hr style="border:none; border-top:1px solid #e5e7eb; margin:16px 0">
+    <div class="form-footer">
+      <button class="btn-primary" type="submit">Generar código</button>
+      <a class="link" href="login.php">Volver a iniciar sesión</a>
+    </div>
+  </form>
 
-    <!-- Paso 2: Aplicar el código y nueva contraseña -->
-    <form id="applyCodeForm" method="POST" action="">
-      <div class="input-group input-icon">
+  <hr>
+
+  <!-- Paso 2: Aplicar el código y nueva contraseña -->
+  <form id="applyCodeForm" method="POST" action="">
+    <div class="input-group">
+      <label class="label" for="codigo">Código de recuperación</label>
+      <div class="input-wrapper">
         <span class="icon" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 17a2 2 0 1 0 2 2a2 2 0 0 0-2-2m6-8h-1V6a5 5 0 0 0-10 0v3H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2M8 9V6a4 4 0 0 1 8 0v3Z"/></svg>
         </span>
-        <label class="label" for="codigo">Código de recuperación</label>
-        <input class="input" type="text" name="codigo" id="codigo" placeholder="Ej. A1B2C3D4" required>
+        <input class="input" type="text" name="codigo" id="codigo"
+               placeholder="Ej. A1B2C3D4" required>
       </div>
+    </div>
 
-      <div class="input-group input-icon">
+    <div class="input-group">
+      <label class="label" for="nueva_contrasena">Nueva contraseña</label>
+      <div class="input-wrapper">
         <span class="icon" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 1a5 5 0 0 1 5 5v3h1a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h1V6a5 5 0 0 1 5-5m3 8V6a3 3 0 0 0-6 0v3h6Z"/></svg>
         </span>
-        <label class="label" for="nueva_contrasena">Nueva contraseña</label>
-        <input class="input" type="password" name="nueva_contrasena" id="nueva_contrasena" placeholder="••••••••" required>
+        <input class="input" type="password" name="nueva_contrasena" id="nueva_contrasena"
+               placeholder="••••••••" required>
         <button id="toggleNew" class="toggle-pass" aria-label="mostrar/ocultar">Mostrar</button>
-        <div class="helper">Mínimo 8 caracteres, una mayúscula y un número.</div>
       </div>
+      <div class="helper">Mínimo 8 caracteres, una mayúscula y un número.</div>
+    </div>
 
-      <div class="input-group input-icon">
+    <div class="input-group">
+      <label class="label" for="confirmar_contrasena">Confirmar contraseña</label>
+      <div class="input-wrapper">
         <span class="icon" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 1a5 5 0 0 1 5 5v3h1a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h1V6a5 5 0 0 1 5-5m3 8V6a3 3 0 0 0-6 0v3h6Z"/></svg>
         </span>
-        <label class="label" for="confirmar_contrasena">Confirmar contraseña</label>
-        <input class="input" type="password" name="confirmar_contrasena" id="confirmar_contrasena" placeholder="••••••••" required>
+        <input class="input" type="password" name="confirmar_contrasena" id="confirmar_contrasena"
+               placeholder="••••••••" required>
         <button id="toggleNew2" class="toggle-pass" aria-label="mostrar/ocultar">Mostrar</button>
       </div>
+    </div>
 
-      <div class="form-footer">
-        <button class="btn btn-primary" type="submit">Actualizar contraseña</button>
-      </div>
-    </form>
-  </section>
+    <div class="form-footer">
+      <button class="btn-primary" type="submit">Actualizar contraseña</button>
+    </div>
+  </form>
 </div>
 
 <?php if ($autoRedirect): ?>
