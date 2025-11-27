@@ -1,0 +1,341 @@
+/* ====== Dashboard Admin (layout tipo UI moderna) ====== */
+
+:root {
+  --admin-bg: #f3f4fb;
+  --admin-blue: #1f3cf4;
+  --admin-blue-soft: #e5edff;
+  --admin-blue-dark: #111827;
+  --admin-text: #0f172a;
+  --admin-muted: #6b7280;
+  --admin-border: #e5e7eb;
+  --admin-pill: #f9fafb;
+  --admin-danger: #b91c1c;
+}
+
+body.admin-body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--admin-bg);
+  color: var(--admin-text);
+}
+
+/* LAYOUT GENERAL */
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* SIDEBAR */
+
+.admin-sidebar {
+  width: 260px;
+  background: var(--admin-blue);
+  color: #fff;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-logo {
+  font-weight: 800;
+  font-size: 22px;
+  margin-bottom: 32px;
+}
+
+.admin-logo span {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Estado normal */
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  background: transparent;
+  color: #000000;
+  font-size: 15px;
+  font-weight: 700;
+  transition: background 0.18s ease, transform 0.08s ease;
+}
+
+/* Hover */
+.admin-nav-item:hover {
+  background: #e6f3f3;
+  transform: translateY(-1px);
+}
+
+/* Activo */
+.admin-nav-item.is-active {
+  background: #ffffff;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.20);
+}
+
+/* Hover del activo (se mantiene igual) */
+.admin-nav-item.is-active:hover {
+  background: #ffffff;
+  transform: none;
+}
+
+/* Deshabilitado */
+.admin-nav-item.is-disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+
+
+.admin-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* CONTENIDO PRINCIPAL */
+
+.admin-main {
+  flex: 1;
+  padding: 28px 32px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* HEADER SUPERIOR (título + resumen + botón) */
+
+.admin-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-header-left h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.admin-header-left p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--admin-muted);
+}
+
+.admin-header-meta {
+  font-size: 12px;
+  color: var(--admin-muted);
+}
+
+/* BOTONES GENÉRICOS */
+
+.btn {
+  border-radius: 999px;
+  border: 1px solid var(--admin-border);
+  background: #fff;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--admin-text);
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.08s ease;
+}
+
+.btn-primary {
+  background: var(--admin-blue);
+  color: #fff;
+  border-color: var(--admin-blue);
+  box-shadow: 0 14px 30px rgba(31, 60, 244, 0.35);
+}
+
+.btn-primary:hover {
+  background: #1730c7;
+  transform: translateY(-1px);
+  box-shadow: 0 18px 40px rgba(31, 60, 244, 0.45);
+}
+
+.btn-ghost {
+  background: transparent;
+}
+
+/* FILTROS (buscador + categoría) */
+
+.admin-filters {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-filters-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 220px;
+}
+
+.field-label {
+  font-size: 11px;
+  color: var(--admin-muted);
+  font-weight: 500;
+}
+
+.field-input,
+.field-select {
+  border-radius: 999px;
+  border: 1px solid var(--admin-border);
+  padding: 8px 12px;
+  font-size: 13px;
+  outline: none;
+  background: var(--admin-pill);
+}
+
+.field-input:focus,
+.field-select:focus {
+  background: #fff;
+  border-color: var(--admin-blue);
+  box-shadow: 0 0 0 2px rgba(31, 60, 244, 0.2);
+}
+
+/* TABLA LISTADO */
+
+.admin-card {
+  background: #ffffff;
+  border-radius: 22px;
+  border: 1px solid #e5e7eb;
+  padding: 10px 0 6px;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table.admin-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+}
+
+table.admin-table thead th {
+  background: var(--admin-pill);
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--admin-muted);
+  border-bottom: 1px solid var(--admin-border);
+}
+
+table.admin-table thead th:first-child {
+  border-top-left-radius: 16px;
+}
+
+table.admin-table thead th:last-child {
+  border-top-right-radius: 16px;
+}
+
+table.admin-table tbody tr {
+  transition: background 0.12s ease;
+}
+
+table.admin-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+table.admin-table tbody td {
+  padding: 11px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+td.c-center {
+  text-align: center;
+}
+
+td.c-right {
+  text-align: right;
+}
+
+td.c-left {
+  text-align: left;
+}
+
+/* Badge categoría */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #1e3a8a;
+  font-weight: 600;
+  font-size: 11px;
+}
+
+/* Enlaces de acción */
+.btn-link {
+  font-weight: 600;
+  color: var(--admin-blue-dark);
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+.btn-link--danger {
+  color: var(--admin-danger);
+}
+
+/* Pie de tabla / meta */
+.admin-table-footer {
+  padding: 8px 14px 6px;
+  font-size: 11px;
+  color: var(--admin-muted);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Pequeños ajustes responsive */
+@media (max-width: 900px) {
+  .admin-sidebar {
+    display: none;
+  }
+  .admin-main {
+    padding: 20px 16px 28px;
+  }
+}

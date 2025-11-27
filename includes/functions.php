@@ -301,4 +301,34 @@ function eliminarProducto($conn, $idProducto) {
     return $ok;
 }
 
+function obtenerNombreUsuario($conn, $idUsuario) {
+    $sql = "SELECT tipo, idRelacionado FROM usuario WHERE idUsuario = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $idUsuario);
+    $stmt->execute();
+    $info = $stmt->get_result()->fetch_assoc();
+
+    if (!$info) return "";
+
+    $tipo = $info['tipo'];
+    $idRel = $info['idRelacionado'];
+
+    if ($tipo === 'Cliente') {
+        $sql2 = "SELECT Nombre FROM cliente WHERE idCliente = ?";
+    } else {
+        // tipo Empleado (incluye Administrador)
+        $sql2 = "SELECT Nombre FROM empleado WHERE idEmpleado = ?";
+    }
+
+    $stmt2 = $conn->prepare($sql2);
+    $stmt2->bind_param("i", $idRel);
+    $stmt2->execute();
+    $res = $stmt2->get_result()->fetch_assoc();
+
+    return $res['Nombre'] ?? "";
+}
+
+
+
+
 ?>

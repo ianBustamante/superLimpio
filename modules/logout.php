@@ -20,6 +20,6 @@ if (isset($_SESSION['idUsuario'])) {
 }
 
 // Redirigir al login
-header("Location: login.php");
+header("Location: ../index.php");
 exit;
 ?>

@@ -1,0 +1,134 @@
+/* ================================
+   Dashboard Modern UI
+   Estilo limpio – Azul suave
+   ================================ */
+
+/* ----------- VARIABLES ----------- */
+:root {
+    --sidebar-bg: #f8faff;
+    --sidebar-text: #1f2330;
+    --sidebar-text-active: #1a3f92;
+    --sidebar-hover-bg: #e8eeff;
+
+    --primary: #4f6df5;       /* azul suave */
+    --primary-dark: #3d55ca;
+
+    --header-bg: #f3f6ff;
+    --search-bg: #ffffff;
+
+    --radius: 18px;
+    --transition: .15s ease;
+}
+
+/* ----------- SIDEBAR ----------- */
+.admin-sidebar {
+    background: var(--sidebar-bg);
+    padding: 25px 18px;
+    border-right: 1px solid #e5e8f3;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    min-width: 210px;
+}
+
+.admin-logo {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--primary-dark);
+    margin-bottom: 25px;
+}
+
+.admin-logo span {
+    font-size: 12px;
+    opacity: 0.75;
+}
+
+/* opciones del panel */
+.admin-nav {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.admin-nav-item {
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--sidebar-text);
+    text-decoration: none;
+    border-radius: var(--radius);
+    transition: var(--transition);
+}
+
+.admin-nav-item:hover {
+    background: var(--sidebar-hover-bg);
+    transform: translateX(3px);
+}
+
+.admin-nav-item.is-active {
+    background: var(--primary);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 6px 14px rgba(79, 109, 245, 0.25);
+}
+
+/* íconos */
+.admin-nav-item .label {
+    margin-top: 1px;
+}
+
+
+/* ----------- HEADER SUPERIOR ----------- */
+.admin-header-row {
+    background: var(--header-bg);
+    padding: 18px 22px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+/* Texto principal */
+.admin-header-left h1 {
+    margin-bottom: 4px;
+    font-size: 22px;
+}
+
+/* ----------- SEARCH BAR ----------- */
+.search-container {
+    background: var(--search-bg);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 300px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.search-container input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+}
+
+.search-icon {
+    opacity: 0.55;
+}
+
+/* ----------- HEADER ICONS ----------- */
+.header-icons {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-icons img.profile {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+}

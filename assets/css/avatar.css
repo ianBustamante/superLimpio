@@ -1,0 +1,22 @@
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #4f6df5; 
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 17px;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.18);
+    user-select: none;
+    transition: 0.15s ease;
+}
+
+.avatar-circle:hover {
+    background: #3652db;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.22);
+}
