@@ -308,51 +308,207 @@ if (!empty($_SESSION['carrito'])) {
 <head>
   <meta charset="UTF-8">
   <title>Vendedor · Registrar venta</title>
+
+  <!-- Tus CSS existentes (venta.css, etc.) -->
   <link rel="stylesheet" href="../../assets/css/style.css">
   <link rel="stylesheet" href="../../assets/css/admin.css">
   <link rel="stylesheet" href="../../assets/css/dashboard-modern.css">
   <link rel="stylesheet" href="../../assets/css/avatar.css">
   <link rel="stylesheet" href="../../assets/css/venta.css">
+
+  <!-- === MISMO LAYOUT AZUL QUE INVENTARIO === -->
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      display:flex;
+      height:100vh;
+      background:#0b1f6b;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+    }
+
+    .sidebar {
+      width:190px;
+      padding:18px 8px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .sidebar-card {
+      width:100%;
+      height:100%;
+      border-radius:32px;
+      padding:26px 20px;
+      background:linear-gradient(180deg,#2141ff,#04145a);
+      color:#eef3ff;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .logo {
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:.8px;
+      margin-bottom:32px;
+    }
+    .logo span{display:block;}
+
+    .side-menu{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      margin-top:8px;
+    }
+
+    .side-item{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:10px 12px;
+      border-radius:999px;
+      text-decoration:none;
+      color:inherit;
+      font-size:15px;
+      font-weight:500;
+      cursor:pointer;
+      transition:background .18s ease,transform .12s ease;
+    }
+
+    .side-item:hover{
+      background:rgba(255,255,255,.14);
+      transform:translateX(2px);
+    }
+
+    .side-item--active{
+      background:#eef3ff;
+      color:#1f3bbf;
+      font-weight:600;
+      box-shadow:0 4px 12px rgba(0,0,0,.28);
+    }
+
+    .side-item-icon{
+      width:28px;
+      height:28px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(255,255,255,.18);
+    }
+
+    .side-item--active .side-item-icon{
+      background:#1f3bbf;
+      color:#fff;
+    }
+
+    .side-item-icon svg{width:18px;height:18px;}
+    .side-item-label{margin-top:2px;}
+
+    .side-footer{
+      margin-top:auto;
+      font-size:11px;
+      opacity:.75;
+    }
+
+    .content{
+      flex:1;
+      padding:26px 26px 26px 10px;
+      background:#f3f5ff;
+      border-top-left-radius:32px;
+      border-bottom-left-radius:32px;
+      box-shadow:-8px 0 18px rgba(0,0,0,.35);
+      overflow-y:auto;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .header-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:20px;
+    }
+    .header-row h1{font-size:24px;margin-bottom:4px;color:#111827;}
+    .header-row p{font-size:14px;color:#6b7280;}
+
+    .avatar-circle{
+      width:32px;
+      height:32px;
+      border-radius:999px;
+      background:#1f3bbf;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:15px;
+      font-weight:700;
+    }
+  </style>
 </head>
-<body class="admin-body">
+<body>
 
-<div class="admin-layout">
+  <!-- === SIDEBAR AZUL === -->
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="logo">
+        <span>Super</span>
+        <span>Limpio</span>
+      </div>
 
-  <!-- SIDEBAR -->
-  <aside class="admin-sidebar">
-    <div class="admin-logo">
-      Super Limpio
-      <span>Panel de vendedor</span>
+      <nav class="side-menu">
+        <!-- Inventario -->
+        <a href="index.php" class="side-item">
+          <div class="side-item-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#ffffff"
+              viewBox="0 0 256 256">
+              <path d="M240,208H224V136l2.34,2.34A8,8,0,0,0,237.66,127L139.31,28.68a16,16,0,0,0-22.62,0L18.34,127a8,8,0,0,0,11.32,11.31L32,136v72H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM48,120l80-80,80,80v88H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48Zm96,88H112V160h32Z"></path>
+            </svg>
+          </div>
+          <span class="side-item-label">Inventario</span>
+        </a>
+
+        <!-- Registrar venta (ACTIVO) -->
+        <a href="venta_nueva.php" class="side-item side-item--active">
+          <div class="side-item-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#ffffff" viewBox="0 0 256 256">
+              <path d="M216,72H69.12L61.71,37.88A16,16,0,0,0,46.08,24H24a8,8,0,0,0,0,16H46.08l24.2,112.93A24,24,0,1,0,120,168h56a24,24,0,1,0,22.63-16.94L213,120l11.48-34.43A8,8,0,0,0,216,72ZM88,192a8,8,0,1,1-8-8A8,8,0,0,1,88,192Zm104,0a8,8,0,1,1-8-8A8,8,0,0,1,192,192Zm5-80H83.75L75.12,88H208.2Z"></path>
+            </svg>
+          </div>
+          <span class="side-item-label">Registrar venta</span>
+        </a>
+
+        <!-- Cerrar sesión -->
+        <a href="../../modules/logout.php" class="side-item">
+          <div class="side-item-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#ffffff"
+              viewBox="0 0 256 256">
+              <path d="M141.66,133.66l-40,40a8,8,0,0,1-11.32-11.32L116.69,136H24a8,8,0,0,1,0-16h92.69L90.34,93.66a8,8,0,0,1,11.32-11.32l40,40A8,8,0,0,1,141.66,133.66ZM200,32H136a8,8,0,0,0,0,16h56V208H136a8,8,0,0,0,0,16h64a8,8,0,0,0,8-8V40A8,8,0,0,0,200,32Z"></path>
+            </svg>
+          </div>
+          <span class="side-item-label">Cerrar sesión</span>
+        </a>
+      </nav>
+
+      <div class="side-footer">
+        Panel Vendedor · POS
+      </div>
     </div>
-
-    <nav class="admin-nav">
-      <a href="index.php" class="admin-nav-item">
-        <span class="label">Inventario</span>
-      </a>
-      <a href="venta_nueva.php" class="admin-nav-item is-active">
-        <span class="label">Registrar venta</span>
-      </a>
-      <a href="../../modules/logout.php" class="admin-nav-item">
-        <span class="label">Cerrar sesión</span>
-      </a>
-    </nav>
   </aside>
 
-  <!-- CONTENIDO -->
-  <main class="admin-main">
+  <!-- === CONTENIDO (reutilizamos tu layout de venta) === -->
+  <main class="content">
 
-    <!-- Header con avatar -->
-    <div class="admin-header-row">
-      <div class="admin-header-left">
+    <!-- Header con avatar (usa $inicial definido en el PHP de arriba) -->
+    <div class="header-row">
+      <div>
         <h1>Registrar venta</h1>
         <p>Selecciona los productos y completa los datos del cliente.</p>
       </div>
-      <div class="header-icons">
-        <div class="avatar-circle"><?php echo $inicial; ?></div>
-      </div>
+      <div class="avatar-circle"><?php echo $inicial; ?></div>
     </div>
 
-    <!-- LAYOUT DE VENTA -->
+    <!-- Todo tu layout de venta intacto -->
     <div class="venta-layout">
 
       <!-- COLUMNA IZQUIERDA: PRODUCTOS -->
@@ -363,7 +519,7 @@ if (!empty($_SESSION['carrito'])) {
             <p>Busca y agrega productos a la venta.</p>
           </div>
 
-          <!-- Filtros como en Inventario -->
+          <!-- Filtros -->
           <form method="get" class="venta-search-row">
             <input
               type="text"
@@ -414,7 +570,6 @@ if (!empty($_SESSION['carrito'])) {
                   <td><?= (int)$p['Stock'] ?></td>
                   <td>
                     <?php if ((int)$p['Stock'] > 0): ?>
-                      <!-- Al enviar, hacemos POST y volvemos a #productos para no subir arriba -->
                       <form method="post" class="venta-add-control" action="venta_nueva.php#productos">
                         <input type="hidden" name="accion" value="agregar">
                         <input type="hidden" name="idProducto" value="<?= $p['idProducto'] ?>">
@@ -447,20 +602,18 @@ if (!empty($_SESSION['carrito'])) {
       <!-- COLUMNA DERECHA: CLIENTE + CARRITO -->
       <section class="venta-col venta-col-right" id="venta">
 
-        <!-- PANEL CLIENTE + TOTAL + REGISTRAR -->
+        <!-- PANEL CLIENTE + TOTAL -->
         <div class="venta-panel">
           <div class="venta-panel-header">
             <h2>Cliente y resumen</h2>
           </div>
 
-          <!-- Mensaje aquí, cerca de la acción, no arriba de la página -->
           <?php if ($mensaje): ?>
             <div class="alert <?= $tipoMensaje; ?>" style="margin-bottom: 10px;">
               <?= htmlspecialchars($mensaje); ?>
             </div>
           <?php endif; ?>
 
-          <!-- Form para REGISTRAR VENTA -->
           <form method="post" action="venta_nueva.php#venta">
             <input type="hidden" name="accion" value="finalizar">
 
@@ -480,7 +633,8 @@ if (!empty($_SESSION['carrito'])) {
               </div>
 
               <label class="venta-label">Nombre (solo referencia visual)</label>
-              <input type="text" class="venta-input" name="cliente_rapido" placeholder="Nombre del cliente (no se guarda)">
+              <input type="text" class="venta-input" name="cliente_rapido"
+                     placeholder="Nombre del cliente (no se guarda)">
             </div>
 
             <div class="venta-total-row" style="margin-top: 14px;">
@@ -496,7 +650,7 @@ if (!empty($_SESSION['carrito'])) {
           </form>
         </div>
 
-        <!-- PANEL CARRITO / DETALLE -->
+        <!-- PANEL CARRITO -->
         <div class="venta-panel" style="margin-top: 14px;">
           <div class="venta-panel-header">
             <h2>Productos en la venta</h2>
@@ -558,9 +712,8 @@ if (!empty($_SESSION['carrito'])) {
     </div><!-- /venta-layout -->
 
   </main>
-</div>
 
-<!-- JS sencillo para que los mensajes desaparezcan -->
+<!-- JS para ocultar mensajes -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const alertBox = document.querySelector('.alert');
@@ -570,9 +723,7 @@ if (!empty($_SESSION['carrito'])) {
         alertBox.style.opacity = '0';
         alertBox.style.transform = 'translateY(-4px)';
       }, 2500);
-      setTimeout(() => {
-        alertBox.remove();
-      }, 3200);
+      setTimeout(() => { alertBox.remove(); }, 3200);
     }
   });
 </script>

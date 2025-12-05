@@ -32,19 +32,59 @@ function usuarioExiste($conn, $correo) {
 }
 
 // Registrar un nuevo usuario
+// Registrar un nuevo usuario
 function registrarUsuario($conn, $correo, $password, $tipo = 'Cliente') {
     $hash = password_hash($password, PASSWORD_DEFAULT);
-    $sql = "INSERT INTO usuario (correo, contrasena, tipo, estado) VALUES (?, ?, ?, 'Activo')";
+
+    // 1) Crear usuario (sin idRelacionado al inicio)
+    $sql = "INSERT INTO usuario (correo, contrasena, tipo, estado)
+            VALUES (?, ?, ?, 'Activo')";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("sss", $correo, $hash, $tipo);
 
-    if ($stmt->execute()) {
-        $idUsuario = $stmt->insert_id;
-        registrarEvento($conn, $idUsuario, 'Registro', 'Exitoso', 'Usuario registrado correctamente.');
-        return true;
-    } else {
+    if (!$stmt->execute()) {
         return false;
     }
+
+    $idUsuario    = $stmt->insert_id;
+    $idRelacionado = null;
+
+    // 2) Si es Cliente, crear también registro en tabla CLIENTE
+    if ($tipo === 'Cliente') {
+        $sqlCli = "INSERT INTO cliente (Nombre, Apellido, Telefono, Direccion, Correo)
+                   VALUES ('', '', NULL, NULL, ?)";
+        $stmtCli = $conn->prepare($sqlCli);
+        $stmtCli->bind_param("s", $correo);
+
+        if ($stmtCli->execute()) {
+            $idRelacionado = $stmtCli->insert_id;
+        }
+    }
+
+    // (Opcional) si algún día registras Empleados desde aquí:
+    /*
+    if ($tipo === 'Empleado') {
+        $sqlEmp = "INSERT INTO empleado (Nombre, Apellido, Puesto, Telefono, Salario, Correo)
+                   VALUES ('', '', 'Empleado', NULL, NULL, ?)";
+        $stmtEmp = $conn->prepare($sqlEmp);
+        $stmtEmp->bind_param("s", $correo);
+
+        if ($stmtEmp->execute()) {
+            $idRelacionado = $stmtEmp->insert_id;
+        }
+    }
+    */
+
+    // 3) Actualizar el usuario con su idRelacionado
+    if ($idRelacionado !== null) {
+        $sqlUp = "UPDATE usuario SET idRelacionado = ? WHERE idUsuario = ?";
+        $stmtUp = $conn->prepare($sqlUp);
+        $stmtUp->bind_param("ii", $idRelacionado, $idUsuario);
+        $stmtUp->execute();
+    }
+
+    registrarEvento($conn, $idUsuario, 'Registro', 'Exitoso', 'Usuario registrado correctamente.');
+    return true;
 }
 
 // Iniciar sesión
@@ -327,6 +367,51 @@ function obtenerNombreUsuario($conn, $idUsuario) {
 
     return $res['Nombre'] ?? "";
 }
+// ============================
+//  CLIENTE: obtener / actualizar datos de perfil
+// ============================
+
+// Obtener datos del cliente por idCliente
+function obtenerClientePorId($conn, $idCliente) {
+    $sql = "SELECT idCliente, Nombre, Apellido, Telefono 
+            FROM cliente
+            WHERE idCliente = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $idCliente);
+    $stmt->execute();
+    return $stmt->get_result()->fetch_assoc();
+}
+
+// Actualizar datos básicos del cliente
+function actualizarClientePerfil($conn, $idCliente, $nombre, $apellido, $telefono) {
+    $sql = "UPDATE cliente
+               SET Nombre = ?, Apellido = ?, Telefono = ?
+             WHERE idCliente = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sssi", $nombre, $apellido, $telefono, $idCliente);
+    $ok = $stmt->execute();
+
+    if ($ok && isset($_SESSION['idUsuario'])) {
+        registrarEvento(
+            $conn,
+            $_SESSION['idUsuario'],
+            'Cliente - Actualizar perfil',
+            'Exitoso',
+            "Se actualizó el perfil del cliente id=$idCliente"
+        );
+    }
+    return $ok;
+}
+
+// Validar teléfono simple (sólo dígitos y mínimo 8)
+function validarTelefono($telefono) {
+    $telefono = preg_replace('/\s+/', '', $telefono); // quitar espacios
+    if (!preg_match('/^[0-9]{8,15}$/', $telefono)) {
+        return false;
+    }
+    return true;
+}
+
 
 
 

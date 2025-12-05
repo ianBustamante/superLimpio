@@ -57,25 +57,39 @@ $totalProductos = count($productos);
 <div class="admin-layout">
 
   <!-- SIDEBAR -->
-  <aside class="admin-sidebar">
-    <div class="admin-logo">
-      Super Limpio
-      <span>Panel de administración</span>
-    </div>
+  <!-- SIDEBAR -->
+<aside class="admin-sidebar">
+  <div class="admin-logo">
+    Super Limpio
+    <span>Panel de administración</span>
+  </div>
 
-    <nav class="admin-nav">
-  <!-- Productos activo -->
-  <a href="index.php" class="admin-nav-item is-active">
-    <span class="label">Productos</span>
-  </a>
+  <nav class="admin-nav">
+    <!-- Productos -->
+    <a href="index.php"
+       class="admin-nav-item <?= basename($_SERVER['PHP_SELF']) === 'index.php' ? 'is-active' : '' ?>">
+      <span class="label">Productos</span>
+    </a>
 
-  <!-- Usuarios (placeholder, sin 'Próximamente') -->
-  <a href="#!" class="admin-nav-item">
-    <span class="label">Usuarios</span>
-  </a>
-</nav>
+    <!-- Usuarios -->
+    <a href="usuarios.php"
+       class="admin-nav-item <?= basename($_SERVER['PHP_SELF']) === 'usuarios.php' || strpos(basename($_SERVER['PHP_SELF']), 'usuario_') === 0 ? 'is-active' : '' ?>">
+      <span class="label">Usuarios</span>
+    </a>
 
-  </aside>
+    <!-- Reportes de ventas -->
+    <a href="reportes_ventas.php"
+       class="admin-nav-item <?= basename($_SERVER['PHP_SELF']) === 'reportes_ventas.php' ? 'is-active' : '' ?>">
+      <span class="label">Reportes de ventas</span>
+    </a>
+
+    <!-- Cerrar sesión -->
+    <a href="../../modules/logout.php" class="admin-nav-item">
+      <span class="label">Cerrar sesión</span>
+    </a>
+  </nav>
+</aside>
+
 
   <!-- CONTENIDO PRINCIPAL -->
   <main class="admin-main">
