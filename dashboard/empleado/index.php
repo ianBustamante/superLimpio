@@ -63,8 +63,8 @@ if ($q !== '' || $categoriaFiltro !== '') {
 // Categorías para tarjetas y select
 $sqlCats = "SELECT c.idCategoria, c.Nombre,
                    COUNT(p.idProducto) AS totalProductos
-            FROM Categoria c
-            LEFT JOIN Producto p ON p.idCategoria = c.idCategoria
+            FROM categoria c
+            LEFT JOIN producto p ON p.idCategoria = c.idCategoria
             GROUP BY c.idCategoria, c.Nombre
             ORDER BY c.Nombre";
 $resCats = $conn->query($sqlCats);

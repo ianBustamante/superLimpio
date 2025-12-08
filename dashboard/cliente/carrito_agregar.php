@@ -33,7 +33,7 @@ if ($idProducto <= 0) {
 }
 
 // Obtener producto
-$sqlP = "SELECT idProducto, Nombre, Precio, Stock FROM Producto WHERE idProducto = ? AND Stock > 0";
+$sqlP = "SELECT idProducto, Nombre, Precio, Stock FROM producto WHERE idProducto = ? AND Stock > 0";
 $stmtP = $conn->prepare($sqlP);
 $stmtP->bind_param("i", $idProducto);
 $stmtP->execute();

@@ -52,8 +52,8 @@ $search = trim($_GET['q'] ?? '');
 // CATEGORÍAS
 $sqlCats = "SELECT c.idCategoria, c.Nombre,
                    COUNT(p.idProducto) AS totalProductos
-            FROM Categoria c
-            LEFT JOIN Producto p ON p.idCategoria = c.idCategoria
+            FROM categoria c
+            LEFT JOIN producto p ON p.idCategoria = c.idCategoria
             GROUP BY c.idCategoria, c.Nombre
             ORDER BY c.Nombre";
 
@@ -68,8 +68,8 @@ $sqlProd = "SELECT p.idProducto,
                    p.Stock,
                    p.idCategoria,
                    c.Nombre AS Categoria
-            FROM Producto p
-            INNER JOIN Categoria c ON c.idCategoria = p.idCategoria
+            FROM producto p
+            INNER JOIN categoria c ON c.idCategoria = p.idCategoria
             WHERE p.Stock > 0";
 $types  = '';
 $params = [];

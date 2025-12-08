@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // Verificar stock actual
-            $sqlS = "SELECT Stock FROM Producto WHERE idProducto = ?";
+            $sqlS = "SELECT Stock FROM producto WHERE idProducto = ?";
             $stmtS = $conn->prepare($sqlS);
             $stmtS->bind_param("i", $idProd);
             $stmtS->execute();
