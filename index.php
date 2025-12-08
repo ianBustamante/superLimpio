@@ -1,5 +1,6 @@
 <?php
-// =================== PHP: CONEXIÓN Y CONSULTAS ===================
+// =================== PHP: CONEXIÓN Y CONSULTAS xd===================
+// =================== PHP: CONEXIÓN Y CONSULTAS xd===================
 require_once 'includes/connection.php';
 require_once 'includes/functions.php';
 
