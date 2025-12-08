@@ -4,9 +4,9 @@
 
 
 $servername = "localhost";
-$username   = "root";
-$password   = "";
-$database   = "productos_limpieza";
+$username   = "u534788190_superLimpio";
+$password   = "superLimpio1!";
+$database   = "u534788190_superLimpio";
 
 // Crear conexión
 $conn = new mysqli($servername, $username, $password, $database);
