@@ -362,6 +362,9 @@ $categorias = $resCats ? $resCats->fetch_all(MYSQLI_ASSOC) : [];
     .btn-link:hover {
       text-decoration: underline;
     }
+    .btn-link--danger {
+      color: #b91c1c;
+    }
   </style>
 </head>
 <body>
@@ -582,6 +585,12 @@ $categorias = $resCats ? $resCats->fetch_all(MYSQLI_ASSOC) : [];
                   <a href="producto_editar.php?id=<?= $p['idProducto'] ?>" class="btn-link">Editar</a>
                 <?php else: ?>
                   <span style="color:#9ca3af;">Editar</span>
+                <?php endif; ?>
+                &nbsp;|&nbsp;
+                <?php if ($permisosProd['puede_eliminar']): ?>
+                  <a href="producto_eliminar.php?id=<?= $p['idProducto'] ?>" class="btn-link btn-link--danger">Eliminar</a>
+                <?php else: ?>
+                  <span style="color:#9ca3af;">Eliminar</span>
                 <?php endif; ?>
               </td>
             </tr>
