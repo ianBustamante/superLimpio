@@ -21,6 +21,12 @@ if (!$info || $info['tipo'] !== 'Empleado') {
     exit();
 }
 
+$permisosProd = obtenerPermisosProductos($conn, $idUsuario);
+if (!$permisosProd['puede_modificar']) {
+    header("Location: index.php?type=error&msg=" . urlencode("No tienes permiso para modificar productos."));
+    exit();
+}
+
 // --- Helpers locales (no duplican funciones globales) ---
 function obtenerProductoPorIdLocal($conn, $id) {
   $sql = "SELECT p.idProducto, p.Nombre, p.Descripcion, p.Precio, p.Stock, p.idCategoria

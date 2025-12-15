@@ -24,9 +24,13 @@ if (!$infoUsuario || $infoUsuario['tipo'] !== 'Empleado') {
     exit();
 }
 
+$permisosProd = obtenerPermisosProductos($conn, $idUsuario);
+
 $idEmpleado = (int)$infoUsuario['idRelacionado'];
 $nombreUsuario = obtenerNombreUsuario($conn, $idUsuario);
 $inicial = strtoupper(substr($nombreUsuario !== '' ? $nombreUsuario : 'V', 0, 1));
+$mensaje = $_GET['msg'] ?? '';
+$tipoMensaje = $_GET['type'] ?? '';
 
 // =========================
 //  Filtros de búsqueda
@@ -35,10 +39,10 @@ $q  = trim($_GET['q'] ?? '');
 $categoriaFiltro = trim($_GET['categoria'] ?? '');
 
 // Productos base (con categoría)
-$productos = obtenerProductos($conn); // ya trae Nombre, Descripcion, Precio, Stock, Categoria, idCategoria
+$productos = $permisosProd['puede_consultar'] ? obtenerProductos($conn) : []; // ya trae Nombre, Descripcion, Precio, Stock, Categoria, idCategoria
 
 // Filtrado en memoria (por texto y categoría)
-if ($q !== '' || $categoriaFiltro !== '') {
+if ($permisosProd['puede_consultar'] && ($q !== '' || $categoriaFiltro !== '')) {
     $productos = array_values(array_filter($productos, function($p) use ($q, $categoriaFiltro) {
 
         if ($q !== '') {
@@ -416,8 +420,32 @@ $categorias = $resCats ? $resCats->fetch_all(MYSQLI_ASSOC) : [];
         <h1>Inventario</h1>
         <p>Consulta los productos disponibles y su stock.</p>
       </div>
-      <div class="avatar-circle"><?php echo $inicial; ?></div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <?php if ($permisosProd['puede_registrar']): ?>
+          <a href="producto_crear.php" class="btn-link" style="padding:8px 12px; border-radius:10px; background:#1f3bbf; color:#fff; font-weight:700; text-decoration:none;">
+            + Nuevo producto
+          </a>
+        <?php else: ?>
+          <span style="padding:8px 12px; border-radius:10px; background:#d1d5db; color:#6b7280; font-weight:700; cursor:not-allowed; display:inline-block;" title="Sin permiso para registrar">
+            + Nuevo producto
+          </span>
+        <?php endif; ?>
+        <div class="avatar-circle"><?php echo $inicial; ?></div>
+      </div>
     </div>
+
+    <?php if ($mensaje): ?>
+      <div class="alert <?= htmlspecialchars($tipoMensaje) ?>" style="margin-bottom:10px; padding:10px 12px; border-radius:12px; font-weight:700;
+        <?php echo $tipoMensaje === 'error' ? 'background:#fee2e2; color:#991b1b; border:1px solid #fecaca;' : 'background:#ecfeff; color:#0ea5e9; border:1px solid #bae6fd;'; ?>">
+        <?= htmlspecialchars($mensaje) ?>
+      </div>
+    <?php endif; ?>
+
+    <?php if (!$permisosProd['puede_consultar']): ?>
+      <div class="alert error" style="margin-bottom:12px; padding:12px 14px; border-radius:12px; background:#fee2e2; color:#991b1b; border:1px solid #fecaca; font-weight:700;">
+        No tienes permiso para consultar productos.
+      </div>
+    <?php endif; ?>
 
     <!-- Buscador y filtros -->
     <form class="search-bar" method="get" action="index.php">
@@ -519,7 +547,13 @@ $categorias = $resCats ? $resCats->fetch_all(MYSQLI_ASSOC) : [];
           </tr>
         </thead>
         <tbody>
-        <?php if (!empty($productos)): ?>
+        <?php if (!$permisosProd['puede_consultar']): ?>
+          <tr>
+            <td colspan="6" style="text-align:center; padding:12px; color:#9ca3af;">
+              No tienes permiso para ver la lista de productos.
+            </td>
+          </tr>
+        <?php elseif (!empty($productos)): ?>
           <?php foreach ($productos as $p): ?>
             <?php
               $stock = (int)$p['Stock'];
@@ -544,7 +578,11 @@ $categorias = $resCats ? $resCats->fetch_all(MYSQLI_ASSOC) : [];
               <td>
                 <a href="producto_ver.php?id=<?= $p['idProducto'] ?>" class="btn-link">Ver</a>
                 &nbsp;|&nbsp;
-                <a href="producto_editar.php?id=<?= $p['idProducto'] ?>" class="btn-link">Editar</a>
+                <?php if ($permisosProd['puede_modificar']): ?>
+                  <a href="producto_editar.php?id=<?= $p['idProducto'] ?>" class="btn-link">Editar</a>
+                <?php else: ?>
+                  <span style="color:#9ca3af;">Editar</span>
+                <?php endif; ?>
               </td>
             </tr>
           <?php endforeach; ?>
@@ -559,7 +597,7 @@ $categorias = $resCats ? $resCats->fetch_all(MYSQLI_ASSOC) : [];
       </table>
     </div>
 
-    <?php if (empty($productos)): ?>
+    <?php if ($permisosProd['puede_consultar'] && empty($productos)): ?>
       <div class="empty-state">
         Ajusta la búsqueda o categoría para ver resultados.
       </div>

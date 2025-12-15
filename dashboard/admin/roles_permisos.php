@@ -251,7 +251,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $idSeleccionado > 0) {
                     <span>Eliminar productos</span>
                   </label>
                   <label class="checkbox-pill">
-                    <input type="checkbox" name="perm_consultar" <?= $permisosActuales['puede_consultar'] ? 'checked' : '' ?> onclick="if(this.checked===false){this.checked=true;return false;}">
+                    <input type="checkbox" name="perm_consultar" <?= $permisosActuales['puede_consultar'] ? 'checked' : '' ?>>
                     <span>Consultar productos</span>
                   </label>
                 </div>

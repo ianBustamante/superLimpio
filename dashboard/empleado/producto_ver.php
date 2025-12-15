@@ -21,6 +21,12 @@ if (!$info || $info['tipo'] !== 'Empleado') {
     exit();
 }
 
+$permisosProd = obtenerPermisosProductos($conn, $idUsuario);
+if (!$permisosProd['puede_consultar']) {
+    header("Location: index.php?type=error&msg=" . urlencode("No tienes permiso para consultar productos."));
+    exit();
+}
+
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($id <= 0) {
     header("Location: index.php");
