@@ -8,16 +8,18 @@ if (!isset($_SESSION['idUsuario']) || !esAdmin($conn, $_SESSION['idUsuario'])) {
   exit();
 }
 
+$permisosProd = obtenerPermisosProductos($conn, $_SESSION['idUsuario']);
+
 // Parámetros de filtro
 $q  = trim($_GET['q'] ?? '');
 $categoriaFiltro = trim($_GET['categoria'] ?? '');
 
 // Datos base
-$productos   = obtenerProductos($conn);
+$productos   = $permisosProd['puede_consultar'] ? obtenerProductos($conn) : [];
 $categorias  = obtenerCategorias($conn); // para el select de filtro
 
 // Aplicar filtros en memoria
-if ($q !== '' || $categoriaFiltro !== '') {
+if ($permisosProd['puede_consultar'] && ($q !== '' || $categoriaFiltro !== '')) {
   $productos = array_values(array_filter($productos, function($p) use ($q, $categoriaFiltro) {
 
     // Filtro de texto
@@ -43,6 +45,8 @@ if ($q !== '' || $categoriaFiltro !== '') {
 }
 
 $totalProductos = count($productos);
+$mensaje = $_GET['msg'] ?? '';
+$tipoMensaje = $_GET['type'] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -77,6 +81,12 @@ $totalProductos = count($productos);
       <span class="label">Usuarios</span>
     </a>
 
+    <!-- Roles y permisos -->
+    <a href="roles_permisos.php"
+       class="admin-nav-item <?= basename($_SERVER['PHP_SELF']) === 'roles_permisos.php' ? 'is-active' : '' ?>">
+      <span class="label">Roles y permisos</span>
+    </a>
+
     <!-- Reportes de ventas -->
     <a href="reportes_ventas.php"
        class="admin-nav-item <?= basename($_SERVER['PHP_SELF']) === 'reportes_ventas.php' ? 'is-active' : '' ?>">
@@ -105,13 +115,29 @@ $totalProductos = count($productos);
       </div>
 
       <div>
-        <a href="producto_crear.php" class="btn btn-primary">
-          + Nuevo producto
-        </a>
+        <?php if ($permisosProd['puede_registrar']): ?>
+          <a href="producto_crear.php" class="btn btn-primary">
+            + Nuevo producto
+          </a>
+        <?php else: ?>
+          <span class="btn btn-ghost" style="opacity:0.6; cursor:not-allowed;" title="Sin permiso para registrar">+ Nuevo producto</span>
+        <?php endif; ?>
       </div>
     </div>
 
     <!-- Filtros: búsqueda + categoría -->
+    <?php if ($mensaje): ?>
+      <div class="alert <?= htmlspecialchars($tipoMensaje) ?>" style="margin-bottom:12px;">
+        <?= htmlspecialchars($mensaje) ?>
+      </div>
+    <?php endif; ?>
+
+    <?php if (!$permisosProd['puede_consultar']): ?>
+      <div class="alert error" style="margin-bottom:12px;">
+        No tienes permiso para consultar productos.
+      </div>
+    <?php endif; ?>
+
     <section class="admin-filters">
       <form method="get" class="admin-filters-form">
         <div class="field-group">
@@ -176,6 +202,13 @@ $totalProductos = count($productos);
           </thead>
 
           <tbody>
+          <?php if (!$permisosProd['puede_consultar']): ?>
+            <tr>
+              <td colspan="7" style="padding: 18px; text-align:center; color:#9ca3af;">
+                No tienes permiso para ver la lista de productos.
+              </td>
+            </tr>
+          <?php else: ?>
           <?php foreach ($productos as $p): ?>
             <tr>
               <td class="c-center">#<?= $p['idProducto'] ?></td>
@@ -189,15 +222,23 @@ $totalProductos = count($productos);
                 <span class="badge"><?= htmlspecialchars($p['Categoria']) ?></span>
               </td>
               <td class="c-center">
-                <a
-                  href="edicion_producto.php?id=<?= $p['idProducto'] ?>"
-                  class="btn-link"
-                >Editar</a>
+                <?php if ($permisosProd['puede_modificar']): ?>
+                  <a
+                    href="edicion_producto.php?id=<?= $p['idProducto'] ?>"
+                    class="btn-link"
+                  >Editar</a>
+                <?php else: ?>
+                  <span style="color:#9ca3af;">Editar</span>
+                <?php endif; ?>
                 &nbsp;|&nbsp;
-                <a
-                  href="producto_eliminar.php?id=<?= $p['idProducto'] ?>"
-                  class="btn-link btn-link--danger"
-                >Eliminar</a>
+                <?php if ($permisosProd['puede_eliminar']): ?>
+                  <a
+                    href="producto_eliminar.php?id=<?= $p['idProducto'] ?>"
+                    class="btn-link btn-link--danger"
+                  >Eliminar</a>
+                <?php else: ?>
+                  <span style="color:#9ca3af;">Eliminar</span>
+                <?php endif; ?>
               </td>
             </tr>
           <?php endforeach; ?>
@@ -208,6 +249,7 @@ $totalProductos = count($productos);
                 No se encontraron productos con los filtros actuales.
               </td>
             </tr>
+          <?php endif; ?>
           <?php endif; ?>
           </tbody>
         </table>

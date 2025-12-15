@@ -7,6 +7,11 @@ if (!isset($_SESSION['idUsuario']) || !esAdmin($conn, $_SESSION['idUsuario'])) {
   header("Location: ../../modules/login.php"); exit();
 }
 
+$permisosProd = obtenerPermisosProductos($conn, $_SESSION['idUsuario']);
+if (!$permisosProd['puede_modificar']) {
+  header("Location: index.php?type=error&msg=" . urlencode("No tienes permiso para modificar productos.")); exit();
+}
+
 // --- Helpers locales (no duplican funciones globales) ---
 function obtenerProductoPorIdLocal($conn, $id) {
   $sql = "SELECT p.idProducto, p.Nombre, p.Descripcion, p.Precio, p.Stock, p.idCategoria

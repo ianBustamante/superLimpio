@@ -99,6 +99,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <span class="label">Usuarios</span>
       </a>
 
+      <a href="roles_permisos.php" class="admin-nav-item">
+        <span class="label">Roles y permisos</span>
+      </a>
+
       <a href="reportes_ventas.php" class="admin-nav-item">
         <span class="label">Reportes de ventas</span>
       </a>

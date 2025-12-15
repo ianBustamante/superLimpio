@@ -7,6 +7,11 @@ if (!isset($_SESSION['idUsuario']) || !esAdmin($conn, $_SESSION['idUsuario'])) {
   header("Location: ../../modules/login.php"); exit();
 }
 
+$permisosProd = obtenerPermisosProductos($conn, $_SESSION['idUsuario']);
+if (!$permisosProd['puede_registrar']) {
+  header("Location: index.php?type=error&msg=" . urlencode("No tienes permiso para registrar productos.")); exit();
+}
+
 $cats = obtenerCategorias($conn);
 $mensaje = ''; $tipo = '';
 

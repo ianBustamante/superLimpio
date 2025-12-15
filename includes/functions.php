@@ -241,6 +241,59 @@ function esAdmin($conn, $idUsuario) {
     return (strcasecmp($puesto, 'Administrador') === 0);
 }
 
+// ============================
+//  PERMISOS SOBRE PRODUCTOS
+// ============================
+function asegurarTablaPermisosProductos($conn) {
+    $sql = "CREATE TABLE IF NOT EXISTS usuario_permisos_productos (
+                idUsuario INT PRIMARY KEY,
+                puede_registrar TINYINT(1) NOT NULL DEFAULT 0,
+                puede_modificar TINYINT(1) NOT NULL DEFAULT 0,
+                puede_eliminar  TINYINT(1) NOT NULL DEFAULT 0,
+                puede_consultar TINYINT(1) NOT NULL DEFAULT 1,
+                CONSTRAINT fk_perm_user_general FOREIGN KEY (idUsuario) REFERENCES usuario(idUsuario) ON DELETE CASCADE
+            ) ENGINE=InnoDB";
+    $conn->query($sql);
+}
+
+function obtenerPermisosProductos($conn, $idUsuario) {
+    asegurarTablaPermisosProductos($conn);
+    $stmt = $conn->prepare("SELECT puede_registrar, puede_modificar, puede_eliminar, puede_consultar FROM usuario_permisos_productos WHERE idUsuario = ?");
+    $stmt->bind_param("i", $idUsuario);
+    $stmt->execute();
+    $res = $stmt->get_result()->fetch_assoc();
+    if ($res) return $res;
+    // Por defecto solo consultar = 1
+    return [
+        'puede_registrar' => 0,
+        'puede_modificar' => 0,
+        'puede_eliminar'  => 0,
+        'puede_consultar' => 1
+    ];
+}
+
+function guardarPermisosProductos($conn, $idUsuario, $permisos) {
+    asegurarTablaPermisosProductos($conn);
+    $stmt = $conn->prepare(
+        "INSERT INTO usuario_permisos_productos (idUsuario, puede_registrar, puede_modificar, puede_eliminar, puede_consultar)
+         VALUES (?, ?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE
+           puede_registrar = VALUES(puede_registrar),
+           puede_modificar = VALUES(puede_modificar),
+           puede_eliminar  = VALUES(puede_eliminar),
+           puede_consultar = VALUES(puede_consultar)"
+    );
+    $stmt->bind_param(
+        "iiiii",
+        $idUsuario,
+        $permisos['puede_registrar'],
+        $permisos['puede_modificar'],
+        $permisos['puede_eliminar'],
+        $permisos['puede_consultar']
+    );
+    return $stmt->execute();
+}
+
 /* ============================
    🔧 UTILIDADES PRODUCTOS (CRUD)
    ============================ */

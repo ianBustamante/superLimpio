@@ -180,10 +180,16 @@ $sinVentas = ($cantidadVentas === 0);
 
     <nav class="admin-nav">
       <a href="index.php" class="admin-nav-item">
-        <span class="label">Dashboard</span>
+        <span class="label">Productos</span>
+      </a>
+      <a href="usuarios.php" class="admin-nav-item">
+        <span class="label">Usuarios</span>
+      </a>
+      <a href="roles_permisos.php" class="admin-nav-item">
+        <span class="label">Roles y permisos</span>
       </a>
       <a href="reportes_ventas.php" class="admin-nav-item is-active">
-        <span class="label">Reporte de ventas</span>
+        <span class="label">Reportes de ventas</span>
       </a>
       <a href="../../modules/logout.php" class="admin-nav-item">
         <span class="label">Cerrar sesión</span>

@@ -16,6 +16,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tipoForm = $_POST['tipo'] ?? 'Cliente';  // Cliente | Empleado | Administrador
     $password = trim($_POST['password'] ?? '');
     $confirm  = trim($_POST['passwordConfirm'] ?? '');
+    $permisos = [
+        'puede_registrar' => isset($_POST['perm_registrar']) ? 1 : 0,
+        'puede_modificar' => isset($_POST['perm_modificar']) ? 1 : 0,
+        'puede_eliminar'  => isset($_POST['perm_eliminar'])  ? 1 : 0,
+        'puede_consultar' => isset($_POST['perm_consultar']) ? 1 : 0,
+    ];
+    if ($permisos['puede_eliminar'] || $permisos['puede_modificar']) {
+        $permisos['puede_consultar'] = 1;
+    }
 
     if (!validarCorreo($correo)) {
         $mensaje = "Correo inválido.";
@@ -35,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     } else {
         $ok = false;
+        $idUsuarioNuevo = null;
 
         if ($tipoForm === 'Cliente') {
             // Usa la función que también crea el Cliente y enlaza idRelacionado
@@ -61,9 +71,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmtUsr = $conn->prepare($sqlUsr);
                 $stmtUsr->bind_param("ssi", $correo, $hash, $idEmpleado);
                 $ok = $stmtUsr->execute();
+                if ($ok) {
+                    $idUsuarioNuevo = $stmtUsr->insert_id;
+                }
             } else {
                 $ok = false;
             }
+        }
+
+        if ($ok && $idUsuarioNuevo && $tipoForm !== 'Cliente') {
+            // Guardar permisos para empleados/administradores
+            $ok = guardarPermisosProductos($conn, $idUsuarioNuevo, $permisos);
         }
 
         if ($ok) {
@@ -104,6 +122,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <span class="label">Usuarios</span>
       </a>
 
+      <a href="roles_permisos.php" class="admin-nav-item">
+        <span class="label">Roles y permisos</span>
+      </a>
+
       <a href="reportes_ventas.php" class="admin-nav-item">
         <span class="label">Reportes de ventas</span>
       </a>
@@ -138,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="field-group">
           <span class="field-label">Tipo de usuario</span>
-          <select name="tipo" class="field-select">
+          <select name="tipo" class="field-select" id="tipo-usuario">
             <option value="Cliente">Cliente</option>
             <option value="Empleado">Empleado</option>
             <option value="Administrador">Administrador</option>
@@ -156,6 +178,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <input type="password" name="passwordConfirm" class="field-input" required>
         </div>
 
+        <div id="permisos-wrapper" style="display:none; margin-top:12px;">
+          <div class="field-label" style="font-size:12px; color:#6b7280; margin-bottom:6px;">Permisos sobre productos</div>
+          <div style="display:grid; grid-template-columns:repeat(2,minmax(220px,1fr)); gap:12px 10px;">
+            <label class="checkbox-pill">
+              <input type="checkbox" name="perm_registrar">
+              <span>Registrar productos</span>
+            </label>
+            <label class="checkbox-pill">
+              <input type="checkbox" name="perm_modificar">
+              <span>Modificar productos</span>
+            </label>
+            <label class="checkbox-pill">
+              <input type="checkbox" name="perm_eliminar">
+              <span>Eliminar productos</span>
+            </label>
+            <label class="checkbox-pill">
+              <input type="checkbox" name="perm_consultar" checked onclick="if(this.checked===false){this.checked=true;return false;}">
+              <span>Consultar productos</span>
+            </label>
+          </div>
+        </div>
+
         <div class="admin-form-actions">
           <a href="usuarios.php" class="btn btn-ghost">Cancelar</a>
           <button type="submit" class="btn btn-primary">Crear usuario</button>
@@ -166,5 +210,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </main>
 </div>
 
+<script>
+  const tipoSelect = document.getElementById('tipo-usuario');
+  const permisosWrapper = document.getElementById('permisos-wrapper');
+  const togglePermisos = () => {
+    const val = tipoSelect.value;
+    permisosWrapper.style.display = (val === 'Empleado' || val === 'Administrador') ? 'block' : 'none';
+  };
+  tipoSelect.addEventListener('change', togglePermisos);
+  togglePermisos();
+</script>
 </body>
 </html>
